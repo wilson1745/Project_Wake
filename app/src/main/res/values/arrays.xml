@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="advance">
+        <item>Memo</item>
+        <item>Personal Information</item>
+        <item>Output Result</item>
+        <item>Language</item>
+        <item>Feedback</item>
+    </string-array>
+
+    <string-array name="instructions_main">
+        <item>Welcome</item>
+        <item>Instructions</item>
+        <item>About Snoring</item>
+        <item>About Snoring &amp; Diabetes</item>
+        <item>FAQs</item>
+    </string-array>
+
+    <string-array name="welcome">
+        <item>1.</item>
+        <item>2.</item>
+        <item>3.</item>
+        <item>4.</item>
+    </string-array>
+
+    <string-array name="instructions">
+        <item>Introduction</item>
+        <item>Placement</item>
+        <item>Results</item>
+        <item>Important Disclaimer</item>
+    </string-array>
+
+    <string-array name="introduction_cont">
+        <item>
+            SnoreDebby is an app that records, measures and tracks your snoring.
+            It helps thousands of people just like you to gain insights into their snoring.
+            \n\nYou can share SnoreDebby&#8217;s reports with your doctor or dentist,
+            or experiment with snoring remedies and lifestyle changes and track their impact over time.
+        </item>
+    </string-array>
+    <string-array name="placement_cont">
+        <item>
+            It is recommended placing the device next to your bed with the microphone facing towards you.
+            Keep the charger connected if possible to ensure full night monitoring and fully charged device
+            the next day.\n\nPlacing the device face down will dim the screen and reduce battery usage.
+            \n\nNote: SnoreDebby is sensitive to ambient noise and works best in quiet environment.
+        </item>
+    </string-array>
+    <string-array name="results_cont">
+        <item>
+            After each night you&#8217;ll receive a report showing you when and how loudly you snored with
+            a selection of audio samples.\n\nYou&#8217;ll also get a Snore Score for the night, which is a
+            measure of snoring intensity. If you experiment with snoring remedies or track factors you can
+            see how they impact your snoring by the change in your Snore Score.\n\nDon&#8217;t worry too much
+            about disk usage, one night of samples only contents 2-4 MB at the default setting.
+            You can also delete unwanted sound files and optionally activate full-night recording if you
+            want to hear everything.
+        </item>
+    </string-array>
+    <string-array name="important_disclaimer_cont">
+        <item>
+            SnoreDebby is not a replacement for a professional sleep study and diagnosis. Snoring can be
+            symptomatic of serious sleep disorders (see the section on obstructive sleep apnea below) and you
+            should seek immediate medical attention if you are concerned by your symptoms.
+        </item>
+    </string-array>
+
+    <string-array name="about_snoring">
+        <item>What is Snoring?</item>
+        <item>Risk Factors</item>
+        <item>Obstructive Sleep Apnea</item>
+        <item>Snoring Remedies</item>
+    </string-array>
+
+    <string-array name="what_cont">
+        <item>
+            Snoring is noisy breathing whilst you sleep caused by the vibration of soft tissue in your head and neck.
+            \n\nThe exact sound you make will depend on the types of soft tissue that is vibrating. For example,
+            if the soft tissue at the back of your nose vibrates it is likely you will produce a pinched nasal sound.
+            If the tissues at the top of your mouth and the back of your throat vibrate, you will produce a louder, more
+            guttural, throaty sound. In most cases, snoring is caused by a combination of areas that are vibrating or blocked.
+            \n\nWhile you sleep your airways relax and narrows. This affects air pressure within your airways, which causes
+            the tissue to vibrate. This can also happen if your airways are partially blocked, for example if you have a cold.
+        </item>
+    </string-array>
+    <string-array name="risk_cont">
+        <item>風險因素</item>
+    </string-array>
+    <string-array name="obstructive_cont">
+        <item>睡眠呼吸中止症</item>
+    </string-array>
+    <string-array name="remedies_cont">
+        <item>改善建議</item>
+    </string-array>
+
+    <string-array name="about_diabetes">
+        <item>What is Type 2 Diabetes?</item>
+        <item>Sleep &amp; Type 2 Diabetes</item>
+        <item>How to improve it</item>
+    </string-array>
+
+    <string-array name="what_t2d">
+        <item>什麼是第二型糖尿病？</item>
+    </string-array>
+    <string-array name="sleep_t2d">
+        <item>睡眠與糖尿病的關係</item>
+    </string-array>
+    <string-array name="advice_t2d">
+        <item>如何改善</item>
+    </string-array>
+
+    <string-array name="faqs">
+        <item>1.</item>
+        <item>2.</item>
+    </string-array>
+
+    <string-array name="null_cont">
+        <item>Null</item>
+    </string-array>
+
+
+
+
+
+
+
+    <string-array name="items_array_expandable_level_one">
+        <item>Level 1.1</item>
+        <item>Level 1.2</item>
+        <item>Level 1.3</item>
+        <item>Level 1.4</item>
+        <item>Level 1.5</item>
+        <item>Level 1.6</item>
+    </string-array>
+    <string-array name="items_array_expandable_level_one_one_child">
+        <item>Level 1.1.1</item>
+        <item>Level 1.1.2</item>
+        <item>Level 1.1.3</item>
+        <item>Level 1.1.4</item>
+        <item>Level 1.1.5</item>
+        <item>Level 1.1.6</item>
+        <item>Level 1.1.7</item>
+        <item>Level 1.1.8</item>
+    </string-array>
+    <string-array name="items_array_expandable_level_one_two_child">
+        <item>Level 1.2.1</item>
+        <item>Level 1.2.2</item>
+        <item>Level 1.2.3</item>
+    </string-array>
+    <string-array name="items_array_expandable_level_two">
+        <item>Second Level 01</item>
+        <item>Second Level 02</item>
+        <item>Second Level 03</item>
+        <item>Second Level 04</item>
+        <item>Second Level 05</item>
+        <item>Second Level 06</item>
+        <item>Second Level 07</item>
+    </string-array>
+    <string-array name="items_array_expandable_level_three">
+        <item>Third Level 01</item>
+        <item>Third Level 02</item>
+        <item>Third Level 03</item>
+        <item>Third Level 04</item>
+        <item>Third Level 05</item>
+    </string-array>
+
+</resources>
+
