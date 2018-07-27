@@ -31,7 +31,6 @@ public class ListFragment extends Fragment {
    private View view;
    private Context context;
    private Cursor cursor;
-   //private MyContentObserver mObserver;
    private SimpleCursorAdapter adapter;
 
    public ListFragment() {
@@ -55,10 +54,6 @@ public class ListFragment extends Fragment {
               "_id");
 
       Log.e("DLA", "onCreateView");
-
-      /*mObserver = new MyContentObserver();
-      //注册观察者
-      cursor.registerContentObserver(mObserver);*/
 
       adapter = new SimpleCursorAdapter(
               context,
@@ -100,47 +95,10 @@ public class ListFragment extends Fragment {
       return view;
    }
 
-
    //刪除資料，刪除id為id的資料
    private void deleteData(long id){
       myDB2 dbHelp = new myDB2(getActivity());
       SQLiteDatabase db = dbHelp.getWritableDatabase();
       db.delete("records", "_id" + " = " + id, null);
    }
-
-   /*//一个观察者
-   private class MyContentObserver extends ContentObserver {
-
-      public MyContentObserver() {
-         super(new Handler());
-      }
-
-      @Override
-      public void onChange(boolean selfChange) {
-         super.onChange(selfChange);
-         Log.e("DLA", "MyContentObserver onChange!");
-//处理数据更新回调
-
-         refreshData();
-      }
-   }
-
-   private void refreshData() {
-      if (cursor.isClosed()) {
-         return;
-      }
-
-//更新
-      cursor.requery();
-   }
-
-   @Override
-   public void onDestroy() {
-      super.onDestroy();
-
-      if(cursor != null) {
-         cursor.unregisterContentObserver(mObserver);
-         cursor.close();
-      }
-   }*/
 }
