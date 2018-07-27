@@ -1,9 +1,12 @@
 package wilson.com.project_wake.Fragments;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
@@ -12,8 +15,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 import wilson.com.project_wake.R;
 import wilson.com.project_wake.SQLiteOpenHelper.myDB2;
@@ -26,13 +31,12 @@ public class ListFragment extends Fragment {
    private View view;
    private Context context;
    private Cursor cursor;
-   private MyContentObserver mObserver;
+   //private MyContentObserver mObserver;
    private SimpleCursorAdapter adapter;
 
    public ListFragment() {
       // Required empty public constructor
    }
-
 
    @Override
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,9 +56,9 @@ public class ListFragment extends Fragment {
 
       Log.e("DLA", "onCreateView");
 
-      mObserver = new MyContentObserver();
+      /*mObserver = new MyContentObserver();
       //注册观察者
-      cursor.registerContentObserver(mObserver);
+      cursor.registerContentObserver(mObserver);*/
 
       adapter = new SimpleCursorAdapter(
               context,
@@ -66,11 +70,45 @@ public class ListFragment extends Fragment {
 
       sleep_list.setAdapter(adapter);
 
+      sleep_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+         @Override
+         public boolean onItemLongClick(AdapterView<?> parent, View view, int position, final long id) {
+            //Toast.makeText(context, "position: " + position + " id: " + id, Toast.LENGTH_LONG).show();
+            final long ids = id;
+
+            new AlertDialog.Builder(context)
+                    .setTitle("Warning!")
+                    .setMessage("Delete this record?")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                          deleteData(ids);
+                       }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                       @Override
+                       public void onClick(DialogInterface dialog, int which) {
+                          //Do nothing!!!
+                       }
+            }).show();
+
+            return true;
+         }
+      });
+
       // Inflate the layout for this fragment
       return view;
    }
 
-   //一个观察者
+
+   //刪除資料，刪除id為id的資料
+   private void deleteData(long id){
+      myDB2 dbHelp = new myDB2(getActivity());
+      SQLiteDatabase db = dbHelp.getWritableDatabase();
+      db.delete("records", "_id" + " = " + id, null);
+   }
+
+   /*//一个观察者
    private class MyContentObserver extends ContentObserver {
 
       public MyContentObserver() {
@@ -104,5 +142,5 @@ public class ListFragment extends Fragment {
          cursor.unregisterContentObserver(mObserver);
          cursor.close();
       }
-   }
+   }*/
 }

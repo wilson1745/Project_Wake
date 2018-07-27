@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.ListFragment">
+    tools:context=".Fragments.ListFragment"
+    android:background="@drawable/sleeptips">
 
     <!-- TODO: Update blank fragment layout -->
 
