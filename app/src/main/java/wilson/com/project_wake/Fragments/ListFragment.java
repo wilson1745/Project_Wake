@@ -42,8 +42,8 @@ public class ListFragment extends Fragment {
       view = inflater.inflate(R.layout.fragment_list, container, false);
       context = getActivity();
 
-      ListView sleep_list = view.findViewById(R.id.sleep_list);
-      myDB2 helper = new myDB2(context, "DB2.db", null, 1);
+      final ListView sleep_list = view.findViewById(R.id.sleep_list);
+      final myDB2 helper = new myDB2(context, "DB2.db", null, 1);
       cursor = helper.getReadableDatabase().query(
               "records",
               null,
@@ -63,8 +63,6 @@ public class ListFragment extends Fragment {
               new int[] {android.R.id.text1},
               1);
 
-      sleep_list.setAdapter(adapter);
-
       sleep_list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
          @Override
          public boolean onItemLongClick(AdapterView<?> parent, View view, int position, final long id) {
@@ -78,6 +76,25 @@ public class ListFragment extends Fragment {
                        @Override
                        public void onClick(DialogInterface dialog, int which) {
                           deleteData(ids);
+
+                          cursor = helper.getReadableDatabase().query(
+                                  "records",
+                                  null,
+                                  null,
+                                  null,
+                                  null,
+                                  null,
+                                  "_id");
+
+                          SimpleCursorAdapter adapter1 = new android.widget.SimpleCursorAdapter(
+                                  context,
+                                  android.R.layout.simple_list_item_1,
+                                  cursor,
+                                  new String[] {"start_time"},
+                                  new int[] {android.R.id.text1}
+                                  );
+
+                          sleep_list.setAdapter(adapter1);
                        }
                     })
                     .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -90,6 +107,8 @@ public class ListFragment extends Fragment {
             return true;
          }
       });
+
+      sleep_list.setAdapter(adapter);
 
       // Inflate the layout for this fragment
       return view;
