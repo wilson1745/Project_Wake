@@ -84,27 +84,23 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
             //DiaryFragment.tag = true;
             break;
          case 1:
-            if(listFragment == null) {
-               listFragment = new ListFragment();
-               transaction.add(R.id.layFrame, listFragment).addToBackStack(null);
-               list.add(listFragment);
+            if(listFragment != null) {
+               listFragment = null;
             }
-            else {
-               transaction.show(listFragment);
-            }
+            listFragment = new ListFragment();
+            transaction.add(R.id.layFrame, listFragment).addToBackStack(null);
+            list.add(listFragment);
             break;
          case 2:
             Toast.makeText(this, "case 2", Toast.LENGTH_LONG).show();
             break;
          case 3:
-            if(instructFragment == null) {
-               instructFragment = new InstructFragment();
-               transaction.add(R.id.layFrame, instructFragment).addToBackStack(null);
-               list.add(instructFragment);
+            if(instructFragment != null) {
+               instructFragment = null;
             }
-            else {
-               transaction.show(instructFragment);
-            }
+            instructFragment = new InstructFragment();
+            transaction.add(R.id.layFrame, instructFragment).addToBackStack(null);
+            list.add(instructFragment);
             //DiaryFragment.tag = true;
             break;
 

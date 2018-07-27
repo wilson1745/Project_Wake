@@ -264,8 +264,23 @@ public class AlarmFragment extends Fragment {
       int minutes = cl.get(Calendar.MINUTE);
       int second = cl.get(Calendar.SECOND);
 
-      if(time.equals("start_time")) start_time = year + "." + month + "." + day + " " + hours + ":" + minutes;
-      else if(time.equals("end_time")) end_time = year + "." + month + "." + day + " " + hours + ":" + minutes;
+      String month_s = formatZero(month);
+      String day_s = formatZero(day);
+      String hours_s = formatZero(hours);
+      String minutes_s = formatZero(minutes);
+      String second_s = formatZero(second);
+
+      if(time.equals("start_time")) start_time = year + "." + month_s + "." + day_s + " " + hours_s + ":" + minutes_s + ":" + second_s;
+      else if(time.equals("end_time")) end_time = year + "." + month_s + "." + day_s + " " + hours_s + ":" + minutes_s + ":" + second_s;
+   }
+
+   private String formatZero(int time) {
+      String shift;
+
+      if(time < 10) shift = "0" + String.valueOf(time);
+      else shift = String.valueOf(time);
+
+      return shift;
    }
 
    private void updateView() {
@@ -274,12 +289,16 @@ public class AlarmFragment extends Fragment {
       int minute = (int) (timeusedinsec / 60) % 60;
       int second = (int) (timeusedinsec % 60);
 
-      if(hour < 10) hourt.setText("0" + hour);
+      hourt.setText(formatZero(hour));
+      mint.setText(formatZero(minute));
+      sec.setText(formatZero(second));
+
+      /*if(hour < 10) hourt.setText("0" + hour);
       else hourt.setText("" + hour);
       if(minute < 10) mint.setText("0" + minute);
       else mint.setText("" + minute);
       if(second < 10) sec.setText("0" + second);
-      else sec.setText("" + second);
+      else sec.setText("" + second);*/
    }
 
    //Sensor Event Listener
