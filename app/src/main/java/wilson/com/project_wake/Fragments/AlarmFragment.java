@@ -77,6 +77,9 @@ public class AlarmFragment extends Fragment {
    private int timeOfSleep;
    private LinearLayout jishi;
 
+   private String start_time, end_time;
+   java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone("GMT+1"); //目前使用英國時間
+
    @SuppressLint("HandlerLeak")
    private Handler mHandler = new Handler() {
       @Override
@@ -107,12 +110,10 @@ public class AlarmFragment extends Fragment {
 
    public void init(View view) {
       initViews(view);
-      //獲取日曆實例
-      calendar = Calendar.getInstance();
-      //獲取時間按鈕
-      final Button timeBtn = (Button) view.findViewById(R.id.timeBtn);
-      //設置時間
-      timeBtn.setOnClickListener(new Button.OnClickListener() {
+      calendar = Calendar.getInstance(); //獲取日曆實例
+      final Button timeBtn = (Button) view.findViewById(R.id.timeBtn); //獲取時間按鈕
+
+      timeBtn.setOnClickListener(new Button.OnClickListener() { //設置時間
          @Override
          public void onClick(View arg0) {
             Log.e(TAG, "Click the time button to set time");
@@ -148,7 +149,6 @@ public class AlarmFragment extends Fragment {
       });
 
       //取消鬧鐘按鈕事件監聽
-
       cancelAlarmBtn.setOnClickListener(new Button.OnClickListener() {
          @Override
          public void onClick(View arg0) {
@@ -191,30 +191,12 @@ public class AlarmFragment extends Fragment {
       hourt   = (TextView) view.findViewById(R.id.hourt);
       mint    = (TextView) view.findViewById(R.id.mint);
       sec     = (TextView) view.findViewById(R.id.sec);
-      reset   = (Button) view.findViewById(R.id.reset);
       start   = (Button) view.findViewById(R.id.start);
+      reset   = (Button) view.findViewById(R.id.reset);
       word1   = (TextView) view.findViewById(R.id.word1);
       cancelAlarmBtn = (Button) view.findViewById(R.id.cancelAlarmBtn);
 
-      reset.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View arg0) {
-            saveData();
-            timeusedinsec = 0;
-            isstop = true;
-            mSensorManager.unregisterListener(mSensorEventListener);
-
-            //對Android版本做相容處理，對於Android 6及以上版本需要向使用者請求授權，而低版本的則直接調用
-            if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-                    && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-               //Do something here...
-            }
-            reset.setVisibility(View.GONE);
-            start.setVisibility(View.VISIBLE);
-            word1.setText("您上次睡了");
-         }
-      });
-
+      //開始記錄
       start.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View arg0) {
@@ -224,12 +206,14 @@ public class AlarmFragment extends Fragment {
             mint.setText(x);
             sec.setText(x);
 
+            findCalendar("start_time");
+            Log.e(TAG, "Date_start: " + start_time);
+
+
             mHandler.removeMessages(1);
             isstop = false;
             mHandler.sendEmptyMessage(1);
             Calendar cl = Calendar.getInstance();
-            //目前使用英國時間
-            java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone("GMT+1");
             cl.setTimeZone(timeZone);
             timeOfSleep = cl.get(Calendar.HOUR_OF_DAY);
             mSensorManager.registerListener(mSensorEventListener, mMagneticSensor, SensorManager.SENSOR_DELAY_UI);
@@ -247,6 +231,41 @@ public class AlarmFragment extends Fragment {
             word1.setText("睡眠開始");
          }
       });
+
+      //結束紀錄
+      reset.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View arg0) {
+            saveData();
+            timeusedinsec = 0;
+            isstop = true;
+            mSensorManager.unregisterListener(mSensorEventListener);
+
+            //對Android版本做相容處理，對於Android 6及以上版本需要向使用者請求授權，而低版本的則直接調用
+            if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+               //Do something here...
+            }
+            reset.setVisibility(View.GONE);
+            start.setVisibility(View.VISIBLE);
+            word1.setText("Your Sleep Length ");
+         }
+      });
+   }
+
+   private void findCalendar(String time) {
+      Calendar cl = Calendar.getInstance();
+      cl.setTimeZone(timeZone);
+
+      int year = cl.get(Calendar.YEAR);
+      int month = cl.get(Calendar.MONTH) + 1;
+      int day = cl.get(Calendar.DAY_OF_MONTH);
+      int hours = cl.get(Calendar.HOUR_OF_DAY);
+      int minutes = cl.get(Calendar.MINUTE);
+      int second = cl.get(Calendar.SECOND);
+
+      if(time.equals("start_time")) start_time = year + "." + month + "." + day + " " + hours + ":" + minutes;
+      else if(time.equals("end_time")) end_time = year + "." + month + "." + day + " " + hours + ":" + minutes;
    }
 
    private void updateView() {
@@ -321,7 +340,6 @@ public class AlarmFragment extends Fragment {
       double grade_sumOfSleep;// = Math.pow(Math.E, -Math.pow((sleepHour-8), 2));
 
       Calendar cl = Calendar.getInstance();
-      java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone("GMT+1");
       cl.setTimeZone(timeZone);
       int nowHour = cl.get(Calendar.HOUR_OF_DAY);
       int nowMinute = cl.get(Calendar.MINUTE);
@@ -396,12 +414,8 @@ public class AlarmFragment extends Fragment {
       //Math.pow(grade_subOfAlarm, 0.5Math.pow(grade_sumOfSleep, 0.4))*Math.pow(grade_timeOfSleep, 1)*Math.pow(grade_numberOfPlay, 0.2)*grade_numberOfTouch;
       grade = 10 * pow(grade, 0.5);
 
-      Calendar calendar1 = Calendar.getInstance();
-      java.util.TimeZone timeZone1 = java.util.TimeZone.getTimeZone("GTM+1");
-      calendar1.setTimeZone(timeZone1);
-      int month = calendar1.get(Calendar.MONTH) + 1;
-      int day = calendar1.get(Calendar.DAY_OF_MONTH);
-      String x = month + "." + day;
+      findCalendar("end_time");
+      Log.e(TAG, "Date_ended: " + end_time);
 
       SharedPreferences sharedpref = getActivity().getSharedPreferences("info", MODE_PRIVATE);
       float z = sharedpref.getFloat("grade", 100);
@@ -420,10 +434,11 @@ public class AlarmFragment extends Fragment {
       myDB2 dbHelp = new myDB2(getActivity());
       final SQLiteDatabase sqLiteDatabase = dbHelp.getWritableDatabase();
       ContentValues cv = new ContentValues();
-      cv.put("time", x);
-      cv.put("grade", z);
-      cv.put("sumOfSleep", sleepHour);
+      cv.put("start_time" , start_time);
+      cv.put("end_time", end_time);
+      cv.put("sleepHour", sleepHour);
       cv.put("timeOfSleep", timeOfSleep);
-      sqLiteDatabase.insert("grade_table", null, cv);
+      cv.put("grade", z);
+      sqLiteDatabase.insert("records", null, cv);
    }
 }

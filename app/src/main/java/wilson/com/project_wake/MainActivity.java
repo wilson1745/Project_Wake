@@ -16,6 +16,7 @@ import java.util.List;
 
 import wilson.com.project_wake.Fragments.AlarmFragment;
 import wilson.com.project_wake.Fragments.InstructFragment;
+import wilson.com.project_wake.Fragments.ListFragment;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationBar.OnTabSelectedListener {
 
@@ -25,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
    BottomNavigationBar bottomNavigationBar;
 
    AlarmFragment alarmFragment;
-   //ChartFragment chartFragment;
+   ListFragment listFragment;
    //DiaryFragment diaryFragment;
    InstructFragment instructFragment;
    FragmentManager fm;
@@ -83,10 +84,17 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
             //DiaryFragment.tag = true;
             break;
          case 1:
-            Toast.makeText(this, "Sleep Trend", Toast.LENGTH_LONG).show();
+            if(listFragment == null) {
+               listFragment = new ListFragment();
+               transaction.add(R.id.layFrame, listFragment).addToBackStack(null);
+               list.add(listFragment);
+            }
+            else {
+               transaction.show(listFragment);
+            }
             break;
          case 2:
-            Toast.makeText(this, "Advance Options", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "case 2", Toast.LENGTH_LONG).show();
             break;
          case 3:
             if(instructFragment == null) {
