@@ -4,6 +4,7 @@ package wilson.com.project_wake.Fragments;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -20,6 +21,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
+import wilson.com.project_wake.Activities.DataActivity;
 import wilson.com.project_wake.R;
 import wilson.com.project_wake.SQLiteOpenHelper.myDB2;
 
@@ -117,14 +119,23 @@ public class ListFragment extends Fragment {
          @Override
          public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             Cursor c = db.rawQuery("SELECT * FROM records Where _id=?", new String[]{String.valueOf(id)});
+            String start_time = null, end_time, grade = null;
+
             while(c.moveToNext()) {
-               String start_time = c.getString(1);
-               String end_time = c.getString(2);
-               String grade = c.getString(5);
+               start_time = c.getString(1);
+               end_time = c.getString(2);
+               grade = c.getString(5);
                Log.e(TAG, "Start: " + start_time);
                Log.e(TAG, "Grad: " + grade);
             }
 
+            Bundle bundle = new Bundle();
+            bundle.putString("start_time", start_time);
+            bundle.putString("grade", grade);
+
+            Intent intent = new Intent(context, DataActivity.class);
+            intent.putExtras(bundle);
+            startActivity(intent);
          }
       });
 
