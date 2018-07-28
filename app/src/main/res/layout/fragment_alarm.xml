@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_main"
+    android:background="@drawable/bg_main3"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -159,12 +159,12 @@
 
     </RelativeLayout>
 
-    <ImageView
+    <!--<ImageView
         android:layout_width="300dp"
         android:layout_height="300dp"
         android:layout_centerInParent="true"
         android:layout_alignParentBottom="true"
         android:src="@drawable/image1"
-        android:id="@+id/imageView" />
+        android:id="@+id/imageView" />-->
 
 </RelativeLayout>

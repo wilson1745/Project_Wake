@@ -80,6 +80,19 @@ public class ParentLevelAdapter extends BaseExpandableListAdapter {
                Log.e("TAG", "content: " + content);
 
                switch(content) {
+                  case "SnoreDiaby":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.snorediaby_cont);
+                     break;
+                  case "Place":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.place_cont);
+                     break;
+                  case "Playback":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.playback_cont);
+                     break;
+                  case "Intensity":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.intensity_cont);
+                     break;
+
                   case "Introduction":
                      mItemChildOfChild = mContext.getResources().getStringArray(R.array.introduction_cont);
                      break;
@@ -103,17 +116,33 @@ public class ParentLevelAdapter extends BaseExpandableListAdapter {
                      mItemChildOfChild = mContext.getResources().getStringArray(R.array.obstructive_cont);
                      break;
                   case "Snoring Remedies":
-                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.remedies_cont );
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.remedies_cont);
                      break;
 
                   case "What is Type 2 Diabetes?":
-                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.what_t2d );
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.what_t2d);
                      break;
                   case "Sleep & Type 2 Diabetes":
-                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.sleep_t2d );
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.sleep_t2d);
                      break;
-                  case "How to improve it":
-                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.advice_t2d );
+                  case "How To Improve It?":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.advice_t2d);
+                     break;
+
+                  case "Device Positioning":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.device_cont);
+                     break;
+                  case "Disk Usage":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.disk_cont);
+                     break;
+                  case "Exporting Sound Files":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.exporting_cont);
+                     break;
+                  case "Two Snorers in the Room":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.snorers_cont);
+                     break;
+                  case "About SnoreDiaby":
+                     mItemChildOfChild = mContext.getResources().getStringArray(R.array.about_cont);
                      break;
 
                   default:

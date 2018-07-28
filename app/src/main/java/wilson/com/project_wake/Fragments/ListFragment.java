@@ -28,10 +28,12 @@ import wilson.com.project_wake.SQLiteOpenHelper.myDB2;
  */
 public class ListFragment extends Fragment {
 
+   private String TAG = "ListFragment";
    private View view;
    private Context context;
    private Cursor cursor;
    private SimpleCursorAdapter adapter;
+   private SQLiteDatabase db;
 
    public ListFragment() {
       // Required empty public constructor
@@ -44,6 +46,8 @@ public class ListFragment extends Fragment {
 
       final ListView sleep_list = view.findViewById(R.id.sleep_list);
       final myDB2 helper = new myDB2(context, "DB2.db", null, 1);
+      db = helper.getReadableDatabase();
+
       cursor = helper.getReadableDatabase().query(
               "records",
               null,
@@ -68,6 +72,7 @@ public class ListFragment extends Fragment {
          public boolean onItemLongClick(AdapterView<?> parent, View view, int position, final long id) {
             //Toast.makeText(context, "position: " + position + " id: " + id, Toast.LENGTH_LONG).show();
             final long ids = id;
+            Toast.makeText(context, "id: " + id, Toast.LENGTH_SHORT).show();
 
             new AlertDialog.Builder(context)
                     .setTitle("Warning!")
@@ -105,6 +110,21 @@ public class ListFragment extends Fragment {
             }).show();
 
             return true;
+         }
+      });
+
+      sleep_list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+         @Override
+         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Cursor c = db.rawQuery("SELECT * FROM records Where _id=?", new String[]{String.valueOf(id)});
+            while(c.moveToNext()) {
+               String start_time = c.getString(1);
+               String end_time = c.getString(2);
+               String grade = c.getString(5);
+               Log.e(TAG, "Start: " + start_time);
+               Log.e(TAG, "Grad: " + grade);
+            }
+
          }
       });
 
