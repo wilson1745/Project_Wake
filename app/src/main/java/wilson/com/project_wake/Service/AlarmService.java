@@ -18,16 +18,22 @@ public class AlarmService extends Service {
    public int onStartCommand(Intent intent, int flags, int startId) {
       final String state = intent.getExtras().getString("extra");
 
-      Log.e(TAG, "State: " + state);
+      if(state.equals("alarm on")) {
+         Log.e(TAG, "State: " + state);
+      }
+      else if(state.equals("alarm off")) {
+         Log.e(TAG, "State: " + state);
 
-      // 關閉服務
-      stopSelf();
+         // 關閉服務
+         stopSelf();
+      }
+
       return Service.START_REDELIVER_INTENT;
    }
 
    @Override
    public void onDestroy() {
-      Log.e(TAG, "onDestroy()");
+      Log.e(TAG, "AlarmService onDestroy()");
       super.onDestroy();
    }
 }

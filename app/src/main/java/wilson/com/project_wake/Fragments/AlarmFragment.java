@@ -114,51 +114,29 @@ public class AlarmFragment extends Fragment {
    public void init(View view) {
       initViews(view);
       context = getActivity();
-
       timeBtn.setOnClickListener(new Button.OnClickListener() { //設置時間
          @Override
          public void onClick(View arg0) {
-            my_intent = new Intent(context, AlarmService.class);
-            my_intent.putExtra("extra", "Alarm On");
-            pending_intent = PendingIntent.getService(context, 100, my_intent, PendingIntent.FLAG_UPDATE_CURRENT);
-            // 取得按下按鈕時的時間做為TimePickerDialog的預設值
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            int hour   = calendar.get(Calendar.HOUR_OF_DAY);
-            int minute = calendar.get(Calendar.MINUTE);
-            // 跳出TimePickerDialog來設定時間
-            TimePickerDialog timePickerDialog = new TimePickerDialog(
-                    context,
-                    new MyOnTimeSetListener(),
-                    hour,
-                    minute,
-                    true);
-
-            timePickerDialog.show();
-
-
-
-            /*Log.e(TAG, "Click the time button to set time");
+            // 設定on time監聽器
             calendar.setTimeInMillis(System.currentTimeMillis());
             new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                @Override
-               public void onTimeSet(TimePicker arg0, int h, int m) {
-                  alarmHour = h;
-                  alarmMinute = m;
+               public void onTimeSet(TimePicker arg0, int hour, int minute) {
+                  alarmHour = hour;
+                  alarmMinute = minute;
                   //更新按鈕上的時間
-                  timeBtn.setText(formatTime(h, m));
+                  timeBtn.setText(formatTime(hour, minute));
                   //設置日曆的時間，主要是讓日曆的年月日和當前同步
                   calendar.setTimeInMillis(System.currentTimeMillis());
                   //設置日曆的小時和分鐘
-                  calendar.set(Calendar.HOUR_OF_DAY, h);
-                  calendar.set(Calendar.MINUTE, m);
+                  calendar.set(Calendar.HOUR_OF_DAY, hour);
+                  calendar.set(Calendar.MINUTE, minute);
                   //將秒和毫秒設置為0
                   calendar.set(Calendar.SECOND, 0);
                   calendar.set(Calendar.MILLISECOND, 0);
-
-                  Log.e(TAG, "Set the time to " + formatTime(h, m));
-                  cancelAlarmBtn.setVisibility(View.VISIBLE);
+                  //Log.e(TAG, "Set alarm to: " + formatTime(hour, minute));
                }
-            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();*/
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
          }
       });
 
@@ -167,32 +145,36 @@ public class AlarmFragment extends Fragment {
          @RequiresApi(api = Build.VERSION_CODES.KITKAT)
          @Override
          public void onClick(View v) {
+            my_intent = new Intent(context, AlarmService.class);
+            my_intent.putExtra("extra", "alarm on");
+            pending_intent = PendingIntent.getService(context, 100, my_intent, PendingIntent.FLAG_UPDATE_CURRENT);
             //獲取鬧鐘管理器
             alarm_manager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+            alarm_manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending_intent);
 
             long systemTime = System.currentTimeMillis();
             long alarmTime = calendar.getTimeInMillis();
 
-            //testing time range
+            //Test time range
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
             String str = df.format(calendar.getTime());
             String sstr = df.format(systemTime);
-
-            //if set the time is smaller than the current time,it will add one day,tomorrow it will ring
+            //超出現在時間就再多加一天
             if(systemTime > alarmTime) {
                calendar.add(Calendar.DAY_OF_YEAR, 1);
                alarmTime = calendar.getTimeInMillis();
             }
-
             long time = alarmTime - systemTime;
             String str1 = df.format(calendar.getTime());
             Log.e(TAG, "1. calendar.getTimeInMillis(): " + str);
             Log.e(TAG, "2. System.currentTimeMillis(): " + sstr);
             Log.e(TAG, "3. calendar.getTimeInMillis(): " + str1);
 
-            //設置鬧鐘
+            //設置鬧鐘start
             alarm_manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending_intent);
             Log.e(TAG, "alarm_manager.setExact");
+            startAlarmBtn.setVisibility(View.INVISIBLE);
+            cancelAlarmBtn.setVisibility(View.VISIBLE);
          }
       });
 
@@ -200,12 +182,14 @@ public class AlarmFragment extends Fragment {
       cancelAlarmBtn.setOnClickListener(new Button.OnClickListener() {
          @Override
          public void onClick(View arg0) {
-            // 由AlarmManager中移除
+            //由AlarmManager中移除
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-            my_intent.putExtra("extra", "Alarm Off");
+            my_intent.putExtra("extra", "alarm off");
             context.startService(my_intent);
             alarmManager.cancel(pending_intent);
-            Log.e(TAG, "alarmManager.cancel(pendingIntent);");
+            //Log.e(TAG, "alarmManager.cancel(pendingIntent);");
+            startAlarmBtn.setVisibility(View.VISIBLE);
+            cancelAlarmBtn.setVisibility(View.INVISIBLE);
          }
       });
 
@@ -295,7 +279,6 @@ public class AlarmFragment extends Fragment {
       cancelAlarmBtn = (Button) view.findViewById(R.id.cancelAlarmBtn);
       startAlarmBtn = view.findViewById(R.id.startAlarmBtn);
       timeBtn = (Button) view.findViewById(R.id.timeBtn); //獲取時間按鈕
-
    }
 
    private void findCalendar(String time) {
@@ -496,24 +479,6 @@ public class AlarmFragment extends Fragment {
       cv.put("grade", z);
       cv.put("suggestion", suggest);
       sqLiteDatabase.insert("records", null, cv);
-   }
-
-   // 設定on time監聽器
-   private class MyOnTimeSetListener implements TimePickerDialog.OnTimeSetListener {
-
-      @Override
-      public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-         // 取得設定後的時間，秒跟毫秒設為 0
-         calendar.setTimeInMillis(System.currentTimeMillis());
-         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-         calendar.set(Calendar.MINUTE, minute);
-         calendar.set(Calendar.SECOND, 0);
-         calendar.set(Calendar.MILLISECOND, 0);
-
-         //AlarmManager.RTC_WAKEUP設定服務在系統休眠時同樣會執行 以set()設定的PendingIntent只會執行一次
-         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-         alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending_intent);
-      }
    }
 
    @Override

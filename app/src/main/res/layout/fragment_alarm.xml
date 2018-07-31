@@ -173,8 +173,9 @@
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/shape"
-        android:text="Cancel Alarm"
+        android:text="Stop Alarm"
         android:textColor="@color/blue"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toplinear" />
 
@@ -189,6 +190,6 @@
         android:text="Start Alarm"
         android:textColor="@color/blue"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cancelAlarmBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/toplinear" />
 
 </android.support.constraint.ConstraintLayout>
