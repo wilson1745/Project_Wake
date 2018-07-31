@@ -125,18 +125,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
    @Override
    protected void onResume() {
       super.onResume();
-      Toast.makeText(this, "MainActivity onResume", Toast.LENGTH_SHORT).show();
+      //Toast.makeText(this, "MainActivity onResume", Toast.LENGTH_SHORT).show();
+      Log.e(TAG, "MainActivity onResume");
    }
 
    @Override
    public void onDestroy() {
       super.onDestroy();
-      Toast.makeText(this, "MainActivity onDestroy", Toast.LENGTH_SHORT).show();
+      //Toast.makeText(this, "MainActivity onDestroy", Toast.LENGTH_SHORT).show();
+      Log.e(TAG, "MainActivity onDestroy");
    }
 
    @Override
    protected void onPause() {
       super.onPause();
-      Toast.makeText(this, "MainActivity onPause", Toast.LENGTH_SHORT).show();
+      //Toast.makeText(this, "MainActivity onPause", Toast.LENGTH_SHORT).show();
+      Log.e(TAG, "MainActivity onPause");
    }
 }
