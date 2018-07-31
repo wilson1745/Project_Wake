@@ -81,6 +81,7 @@ public class AlarmFragment extends Fragment {
    private AlarmManager alarm_manager;
    private Calendar calendar = Calendar.getInstance(); //獲取日曆實例;
    private Context context;
+   private boolean alarm_state;
 
 
    @SuppressLint("HandlerLeak")
@@ -135,12 +136,13 @@ public class AlarmFragment extends Fragment {
                   calendar.set(Calendar.SECOND, 0);
                   calendar.set(Calendar.MILLISECOND, 0);
                   //Log.e(TAG, "Set alarm to: " + formatTime(hour, minute));
+                  alarm_state = true;
                }
             }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
          }
       });
 
-      startAlarmBtn.setOnClickListener(new Button.OnClickListener() {
+      /*startAlarmBtn.setOnClickListener(new Button.OnClickListener() {
          @TargetApi(Build.VERSION_CODES.KITKAT)
          @RequiresApi(api = Build.VERSION_CODES.KITKAT)
          @Override
@@ -176,10 +178,10 @@ public class AlarmFragment extends Fragment {
             startAlarmBtn.setVisibility(View.INVISIBLE);
             cancelAlarmBtn.setVisibility(View.VISIBLE);
          }
-      });
+      });*/
 
       //取消鬧鐘按鈕事件監聽
-      cancelAlarmBtn.setOnClickListener(new Button.OnClickListener() {
+      /*cancelAlarmBtn.setOnClickListener(new Button.OnClickListener() {
          @Override
          public void onClick(View arg0) {
             //由AlarmManager中移除
@@ -191,10 +193,11 @@ public class AlarmFragment extends Fragment {
             startAlarmBtn.setVisibility(View.VISIBLE);
             cancelAlarmBtn.setVisibility(View.INVISIBLE);
          }
-      });
+      });*/
 
       //開始記錄
       start.setOnClickListener(new View.OnClickListener() {
+         @TargetApi(Build.VERSION_CODES.KITKAT)
          @Override
          public void onClick(View arg0) {
             suggest = "";
@@ -205,6 +208,9 @@ public class AlarmFragment extends Fragment {
 
             findCalendar("start_time");
             Log.e(TAG, "Date_start: " + start_time);
+
+            //鬧鐘控制函數
+            alarmControl(alarm_state);
 
             mHandler.removeMessages(1);
             isstop = false;
@@ -229,12 +235,15 @@ public class AlarmFragment extends Fragment {
 
       //結束紀錄
       reset.setOnClickListener(new View.OnClickListener() {
+         @TargetApi(Build.VERSION_CODES.KITKAT)
          @Override
          public void onClick(View arg0) {
             saveData();
             timeusedinsec = 0;
             isstop = true;
             mSensorManager.unregisterListener(mSensorEventListener);
+
+            alarmControl(alarm_state);
 
             //對Android版本做相容處理，對於Android 6及以上版本需要向使用者請求授權，而低版本的則直接調用
             /*if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -254,6 +263,53 @@ public class AlarmFragment extends Fragment {
       /*if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
          //Do something here...
       }*/
+   }
+
+   @TargetApi(Build.VERSION_CODES.KITKAT)
+   private void alarmControl(boolean state) {
+      if(state) {
+         my_intent = new Intent(context, AlarmService.class);
+         my_intent.putExtra("extra", "alarm on");
+         pending_intent = PendingIntent.getService(context, 100, my_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+         //獲取鬧鐘管理器
+         alarm_manager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+         alarm_manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending_intent);
+
+         long systemTime = System.currentTimeMillis();
+         long alarmTime = calendar.getTimeInMillis();
+
+         //Test time range
+         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+         String str = df.format(calendar.getTime());
+         String sstr = df.format(systemTime);
+         //超出現在時間就再多加一天
+         if(systemTime > alarmTime) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+            alarmTime = calendar.getTimeInMillis();
+         }
+         long time = alarmTime - systemTime;
+         String str1 = df.format(calendar.getTime());
+         Log.e(TAG, "1. calendar.getTimeInMillis(): " + str);
+         Log.e(TAG, "2. System.currentTimeMillis(): " + sstr);
+         Log.e(TAG, "3. calendar.getTimeInMillis(): " + str1);
+
+         //設置鬧鐘start
+         alarm_manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending_intent);
+         Log.e(TAG, "alarm_manager.setExact");
+         startAlarmBtn.setVisibility(View.INVISIBLE);
+         cancelAlarmBtn.setVisibility(View.VISIBLE);
+         alarm_state = false;
+      }
+      else {
+         //由AlarmManager中移除
+         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+         my_intent.putExtra("extra", "alarm off");
+         context.startService(my_intent);
+         alarmManager.cancel(pending_intent);
+         //Log.e(TAG, "alarmManager.cancel(pendingIntent);");
+         startAlarmBtn.setVisibility(View.VISIBLE);
+         cancelAlarmBtn.setVisibility(View.INVISIBLE);
+      }
    }
 
    public String formatTime(int h, int m) {
