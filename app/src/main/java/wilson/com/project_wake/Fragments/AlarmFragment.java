@@ -2,6 +2,7 @@ package wilson.com.project_wake.Fragments;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.PendingIntent;
@@ -17,9 +18,11 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -31,6 +34,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import wilson.com.project_wake.R;
@@ -71,6 +75,10 @@ public class AlarmFragment extends Fragment {
 
    private String start_time, end_time;
    java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone("GMT+1"); //目前使用英國時間
+
+   PendingIntent pending_intent;
+   Intent my_intent;
+   AlarmManager alarm_manager;
 
    @SuppressLint("HandlerLeak")
    private Handler mHandler = new Handler() {
@@ -135,18 +143,43 @@ public class AlarmFragment extends Fragment {
       });
 
       startAlarmBtn.setOnClickListener(new Button.OnClickListener() {
+         @TargetApi(Build.VERSION_CODES.KITKAT)
+         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
          @Override
          public void onClick(View v) {
             Log.e(TAG, "Start the alarmManager");
-            //建立Intent和PendingIntent來調用鬧鐘管理器
-            Intent intent = new Intent(getActivity(), AlarmReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
+            // initialize our alarm manager
             //獲取鬧鐘管理器
-            AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-            //AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+            alarm_manager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+
+            my_intent.putExtra("extra", "Alarm On");
+            //建立Intent和PendingIntent來調用鬧鐘管理器
+            my_intent = new Intent(getActivity(), AlarmReceiver.class);
+            // create a pending intent that delays the intent until the specified calendar time
+            pending_intent = PendingIntent.getBroadcast(getActivity(), 0, my_intent, PendingIntent.FLAG_UPDATE_CURRENT);            //AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+
+            long systemTime = System.currentTimeMillis();
+            long alarmTime = calendar.getTimeInMillis();
+            //testing time range
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            String str = df.format(calendar.getTime());
+            String sstr = df.format(systemTime);
+            Log.e(TAG, "1. calendar.getTimeInMillis(): " + str);
+            Log.e(TAG, "1. System.currentTimeMillis(): " + sstr);
+            //if set the time is smaller than the current time,it will add one day,tomorrow it will ring
+            if (systemTime > alarmTime) {
+               calendar.add(Calendar.DAY_OF_YEAR, 1);
+               alarmTime = calendar.getTimeInMillis();
+            }
+            long time = alarmTime - systemTime;
+            String str1 = df.format(calendar.getTime());
+            Log.e(TAG, "2. calendar.getTimeInMillis(): " + str1);
+
+
             //設置鬧鐘
-            alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 10 * 1000, pendingIntent);
+            //alarm_manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+            //alarm_manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 10 * 1000, pendingIntent);
+            alarm_manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending_intent);
          }
       });
 
@@ -154,13 +187,16 @@ public class AlarmFragment extends Fragment {
       cancelAlarmBtn.setOnClickListener(new Button.OnClickListener() {
          @Override
          public void onClick(View arg0) {
-            Intent intent = new Intent(getActivity(), AlarmReceiver.class);
+            /*Intent intent = new Intent(getActivity(), AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
             //獲取鬧鐘管理器
             AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
-            alarmManager.cancel(pendingIntent);
+            alarmManager.cancel(pendingIntent);*/
+            alarm_manager.cancel(pending_intent);
+
             Log.e(TAG, "alarmManager.cancel(pendingIntent);");
             cancelAlarmBtn.setVisibility(View.INVISIBLE);
+
          }
       });
 
