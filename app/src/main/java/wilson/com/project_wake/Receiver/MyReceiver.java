@@ -17,7 +17,7 @@ public class MyReceiver extends BroadcastReceiver {
       //解鎖
       if(intent != null && Intent.ACTION_USER_PRESENT.equals(intent.getAction())) {
          num2++;
-         //Toast.makeText(context, "螢幕已解鎖", Toast.LENGTH_SHORT).show();
+         Toast.makeText(context, "螢幕已解鎖", Toast.LENGTH_SHORT).show();
          Log.e(TAG, "進到MyReceiver，螢幕已解鎖: " + num2 + " 次");
       }
    }

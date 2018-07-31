@@ -1,6 +1,5 @@
 package wilson.com.project_wake.Fragments;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
@@ -11,7 +10,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -22,29 +20,30 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import wilson.com.project_wake.R;
-import wilson.com.project_wake.Receiver.AlarmReceiver;
 import wilson.com.project_wake.Receiver.MyReceiver;
 import wilson.com.project_wake.SQLiteOpenHelper.myDB;
 import wilson.com.project_wake.Service.AlarmService;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
+import static android.content.Context.POWER_SERVICE;
 import static java.lang.Math.pow;
 
 public class AlarmFragment extends Fragment {
@@ -62,11 +61,9 @@ public class AlarmFragment extends Fragment {
    int num1 = 0;
 
    public static final String TAG = "AlarmFragment";
-   /**
-    * Called when the activity is first created.
-    */
+
    private TextView hourt, maohao1, maohao2, word1, mint, sec;
-   private Button start, reset, btn_sensor, timeBtn;
+   private Button start, reset, btn_sensor, timeBtn, btn_start, btn_stop;
    private long timeusedinsec;
    private boolean isstop = false;
    private int alarmHour, alarmMinute;
@@ -105,6 +102,10 @@ public class AlarmFragment extends Fragment {
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
       Log.e(TAG, "AlarmFragment 初始化");
       View view = inflater.inflate(R.layout.fragment_alarm, container, false);
+      context = getActivity();
+      getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+
       init(view);
 
       return view;
@@ -112,7 +113,6 @@ public class AlarmFragment extends Fragment {
 
    public void init(View view) {
       initViews(view);
-      context = getActivity();
       timeBtn.setOnClickListener(new Button.OnClickListener() { //設置時間
          @Override
          public void onClick(View arg0) {
@@ -141,7 +141,6 @@ public class AlarmFragment extends Fragment {
 
       //開始記錄
       start.setOnClickListener(new View.OnClickListener() {
-         @TargetApi(Build.VERSION_CODES.KITKAT)
          @Override
          public void onClick(View arg0) {
             suggest = "";
@@ -154,7 +153,7 @@ public class AlarmFragment extends Fragment {
             Log.e(TAG, "Date_start: " + start_time);
 
             //鬧鐘控制函數
-            alarmControl(true);
+            //alarmControl(true);
 
             mHandler.removeMessages(1);
             isstop = false;
@@ -179,7 +178,6 @@ public class AlarmFragment extends Fragment {
 
       //結束紀錄
       reset.setOnClickListener(new View.OnClickListener() {
-         @TargetApi(Build.VERSION_CODES.KITKAT)
          @Override
          public void onClick(View arg0) {
             saveData();
@@ -187,7 +185,7 @@ public class AlarmFragment extends Fragment {
             isstop = true;
             mSensorManager.unregisterListener(mSensorEventListener);
 
-            alarmControl(false);
+            //alarmControl(false);
 
             //對Android版本做相容處理，對於Android 6及以上版本需要向使用者請求授權，而低版本的則直接調用
             /*if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -196,6 +194,21 @@ public class AlarmFragment extends Fragment {
             reset.setVisibility(View.GONE);
             start.setVisibility(View.VISIBLE);
             word1.setText("Your Sleep Length ");
+         }
+      });
+
+      btn_start.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            //鬧鐘控制函數
+            alarmControl(true);
+         }
+      });
+
+      btn_stop.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+            alarmControl(false);
          }
       });
 
@@ -209,7 +222,6 @@ public class AlarmFragment extends Fragment {
       }*/
    }
 
-   @TargetApi(Build.VERSION_CODES.KITKAT)
    private void alarmControl(boolean state) {
       if(state) {
          my_intent = new Intent(context, AlarmService.class);
@@ -272,6 +284,8 @@ public class AlarmFragment extends Fragment {
       reset   = (Button) view.findViewById(R.id.reset);
       word1   = (TextView) view.findViewById(R.id.word1);
       timeBtn = (Button) view.findViewById(R.id.timeBtn); //獲取時間按鈕
+      btn_start = view.findViewById(R.id.btn_start);
+      btn_stop = view.findViewById(R.id.btn_stop);
    }
 
    private void findCalendar(String time) {
@@ -478,11 +492,19 @@ public class AlarmFragment extends Fragment {
    public void onResume() {
       super.onResume();
       //Toast.makeText(getActivity(), "AlarmFragment onResume", Toast.LENGTH_SHORT).show();
+      Log.e(TAG, "AlarmFragment onDestroy");
    }
 
    @Override
    public void onDestroy() {
       super.onDestroy();
       //Toast.makeText(getActivity(), "AlarmFragment onDestroy", Toast.LENGTH_SHORT).show();
+      Log.e(TAG, "AlarmFragment onDestroy");
+   }
+
+   @Override
+   public void onPause() {
+      // TODO Auto-generated method stub
+      super.onPause();
    }
 }
