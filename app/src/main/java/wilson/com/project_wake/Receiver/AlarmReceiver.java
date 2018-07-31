@@ -11,7 +11,15 @@ public class AlarmReceiver extends BroadcastReceiver {
 
    @Override
    public void onReceive(Context context, Intent intent) {
-      Log.e(TAG, "The time is up, start the alarm...");
-      //	Toast.makeText(arg0, "鬧鐘時間到了！", Toast.LENGTH_SHORT).show();
+      Log.e(TAG, "進到AlarmReceiver");
+
+      if(intent == null) {
+         Log.e(TAG,"intent == null");
+         String alarmState = intent.getExtras().getString("extra");
+         Log.e(TAG,"alarmState: " + alarmState);
+      }
+
+
+      //Toast.makeText(arg0, "鬧鐘時間到了！", Toast.LENGTH_SHORT).show();
    }
 }

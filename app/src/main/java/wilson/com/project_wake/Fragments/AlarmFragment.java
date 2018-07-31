@@ -41,6 +41,7 @@ import wilson.com.project_wake.R;
 import wilson.com.project_wake.Receiver.AlarmReceiver;
 import wilson.com.project_wake.Receiver.MyReceiver;
 import wilson.com.project_wake.SQLiteOpenHelper.myDB;
+import wilson.com.project_wake.Service.AlarmService;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
@@ -61,7 +62,6 @@ public class AlarmFragment extends Fragment {
    int num1 = 0;
 
    public static final String TAG = "AlarmFragment";
-   private Calendar calendar;
    /**
     * Called when the activity is first created.
     */
@@ -76,9 +76,12 @@ public class AlarmFragment extends Fragment {
    private String start_time, end_time;
    java.util.TimeZone timeZone = java.util.TimeZone.getTimeZone("GMT+1"); //目前使用英國時間
 
-   PendingIntent pending_intent;
-   Intent my_intent;
-   AlarmManager alarm_manager;
+   private PendingIntent pending_intent;
+   private Intent my_intent;
+   private AlarmManager alarm_manager;
+   private Calendar calendar = Calendar.getInstance(); //獲取日曆實例;
+   private Context context;
+
 
    @SuppressLint("HandlerLeak")
    private Handler mHandler = new Handler() {
@@ -103,7 +106,6 @@ public class AlarmFragment extends Fragment {
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
       Log.e(TAG, "AlarmFragment 初始化");
       View view = inflater.inflate(R.layout.fragment_alarm, container, false);
-      // Inflate the layout for this fragment
       init(view);
 
       return view;
@@ -111,13 +113,32 @@ public class AlarmFragment extends Fragment {
 
    public void init(View view) {
       initViews(view);
-      calendar = Calendar.getInstance(); //獲取日曆實例
       final Button timeBtn = (Button) view.findViewById(R.id.timeBtn); //獲取時間按鈕
+      context = getActivity();
 
       timeBtn.setOnClickListener(new Button.OnClickListener() { //設置時間
          @Override
          public void onClick(View arg0) {
-            Log.e(TAG, "Click the time button to set time");
+            my_intent = new Intent(context, AlarmService.class);
+            my_intent.putExtra("extra", "Alarm On");
+            pending_intent = PendingIntent.getService(context, 100, my_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            // 取得按下按鈕時的時間做為TimePickerDialog的預設值
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            int hour   = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
+            // 跳出TimePickerDialog來設定時間 */
+            TimePickerDialog timePickerDialog = new TimePickerDialog(
+                    context,
+                    new MyOnTimeSetListener(),
+                    hour,
+                    minute,
+                    true);
+
+            timePickerDialog.show();
+
+
+
+            /*Log.e(TAG, "Click the time button to set time");
             calendar.setTimeInMillis(System.currentTimeMillis());
             new TimePickerDialog(getActivity(), new TimePickerDialog.OnTimeSetListener() {
                @Override
@@ -138,7 +159,7 @@ public class AlarmFragment extends Fragment {
                   Log.e(TAG, "Set the time to " + formatTime(h, m));
                   cancelAlarmBtn.setVisibility(View.VISIBLE);
                }
-            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();
+            }, calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true).show();*/
          }
       });
 
@@ -150,13 +171,13 @@ public class AlarmFragment extends Fragment {
             Log.e(TAG, "Start the alarmManager");
             // initialize our alarm manager
             //獲取鬧鐘管理器
-            alarm_manager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
+            alarm_manager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 
-            my_intent.putExtra("extra", "Alarm On");
             //建立Intent和PendingIntent來調用鬧鐘管理器
-            my_intent = new Intent(getActivity(), AlarmReceiver.class);
+            //my_intent = new Intent(getActivity(), AlarmReceiver.class);
+
             // create a pending intent that delays the intent until the specified calendar time
-            pending_intent = PendingIntent.getBroadcast(getActivity(), 0, my_intent, PendingIntent.FLAG_UPDATE_CURRENT);            //AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+            //pending_intent = PendingIntent.getBroadcast(getActivity(), 0, my_intent, PendingIntent.FLAG_UPDATE_CURRENT);            //AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 
             long systemTime = System.currentTimeMillis();
             long alarmTime = calendar.getTimeInMillis();
@@ -180,6 +201,8 @@ public class AlarmFragment extends Fragment {
             //alarm_manager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
             //alarm_manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), 10 * 1000, pendingIntent);
             alarm_manager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pending_intent);
+            Log.e(TAG, "alarm_manager.setExact");
+
          }
       });
 
@@ -187,15 +210,27 @@ public class AlarmFragment extends Fragment {
       cancelAlarmBtn.setOnClickListener(new Button.OnClickListener() {
          @Override
          public void onClick(View arg0) {
+            // 由AlarmManager中移除
+            AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+            my_intent.putExtra("extra", "Alarm Off");
+            context.startService(my_intent);
+            alarmManager.cancel(pending_intent);
+            Log.e(TAG, "alarmManager.cancel(pendingIntent);");
+
             /*Intent intent = new Intent(getActivity(), AlarmReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 0, intent, 0);
             //獲取鬧鐘管理器
             AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
             alarmManager.cancel(pendingIntent);*/
-            alarm_manager.cancel(pending_intent);
+            /*alarm_manager.cancel(pending_intent);
 
             Log.e(TAG, "alarmManager.cancel(pendingIntent);");
             cancelAlarmBtn.setVisibility(View.INVISIBLE);
+
+            my_intent.putExtra("extra", "Alarm Off");
+            // stop the ringtone
+            getActivity().sendBroadcast(my_intent);*/
+
 
          }
       });
@@ -488,6 +523,37 @@ public class AlarmFragment extends Fragment {
       cv.put("grade", z);
       cv.put("suggestion", suggest);
       sqLiteDatabase.insert("records", null, cv);
+   }
+
+   // 設定on time監聽器
+   private class MyOnTimeSetListener implements TimePickerDialog.OnTimeSetListener {
+
+      @Override
+      public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+         // 取得設定後的時間，秒跟毫秒設為 0
+         calendar.setTimeInMillis(System.currentTimeMillis());
+         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+         calendar.set(Calendar.MINUTE, minute);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+         /*
+          * AlarmManager.RTC_WAKEUP設定服務在系統休眠時同樣會執行
+          * 以set()設定的PendingIntent只會執行一次
+          */
+         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+         alarmManager.set(AlarmManager.RTC_WAKEUP,
+                 calendar.getTimeInMillis(), pending_intent);
+
+         String tmpS = format(hourOfDay) + "：" + format(minute);
+         // 以Toast提示設定已完成
+         Toast.makeText(context, "設定鬧鐘時間為" + tmpS, Toast.LENGTH_SHORT).show();
+      }
+   }
+
+   // 日期時間顯示兩位數的method
+   private String format(int x) {
+      String s = String.valueOf(x);
+      return (s.length() == 1)?"0" + s:s;
    }
 
    @Override

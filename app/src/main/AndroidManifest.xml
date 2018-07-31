@@ -50,8 +50,12 @@
         <activity
             android:name=".Activities.EmailActivity"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".Activities.CalculateAvtivity" />
+        <activity android:name=".Activities.CalculateAvtivity" />
+
+        <service
+            android:name=".Service.AlarmService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
