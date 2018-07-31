@@ -11,18 +11,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.icu.util.TimeZone;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,7 +36,7 @@ import java.util.Calendar;
 import wilson.com.project_wake.R;
 import wilson.com.project_wake.Receiver.AlarmReceiver;
 import wilson.com.project_wake.Receiver.MyReceiver;
-import wilson.com.project_wake.SQLiteOpenHelper.myDB2;
+import wilson.com.project_wake.SQLiteOpenHelper.myDB;
 
 import static android.content.Context.ALARM_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
@@ -101,6 +98,7 @@ public class AlarmFragment extends Fragment {
 
    @Override
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      Log.e(TAG, "AlarmFragment 初始化");
       View view = inflater.inflate(R.layout.fragment_alarm, container, false);
       // Inflate the layout for this fragment
       init(view);
@@ -174,13 +172,11 @@ public class AlarmFragment extends Fragment {
 
    public String formatTime(int h, int m) {
       StringBuffer buf = new StringBuffer();
-
       if(h < 10) buf.append("0" + h);
       else buf.append(h);
       buf.append(" : ");
       if (m < 10) buf.append("0" + m);
       else buf.append(m);
-
       return buf.toString();
    }
 
@@ -276,10 +272,8 @@ public class AlarmFragment extends Fragment {
 
    private String formatZero(int time) {
       String shift;
-
       if(time < 10) shift = "0" + String.valueOf(time);
       else shift = String.valueOf(time);
-
       return shift;
    }
 
@@ -292,13 +286,6 @@ public class AlarmFragment extends Fragment {
       hourt.setText(formatZero(hour));
       mint.setText(formatZero(minute));
       sec.setText(formatZero(second));
-
-      /*if(hour < 10) hourt.setText("0" + hour);
-      else hourt.setText("" + hour);
-      if(minute < 10) mint.setText("0" + minute);
-      else mint.setText("" + minute);
-      if(second < 10) sec.setText("0" + second);
-      else sec.setText("" + second);*/
    }
 
    //Sensor Event Listener
@@ -341,7 +328,7 @@ public class AlarmFragment extends Fragment {
       double grade_numberOfPlay = pow(1.01, -numberOfPlay);
 
       if(numberOfPlay > 20) {
-         suggest += "睡覺玩手機會影響主人的學習哦。";
+         suggest += "睡覺玩手機會影響您隔日的學習哦。";
       }
 
       double grade_numberOfTouch;
@@ -349,7 +336,7 @@ public class AlarmFragment extends Fragment {
 
       if(numberOfTouch > 2000) {
          grade_numberOfTouch = 0.89;
-         suggest += "主人最近是不是輾轉難眠呢~睡眠品質不夠高呢~";
+         suggest += "您最近是不是輾轉難眠呢，睡眠品質不夠高呢。";
       }
       else {
          grade_numberOfTouch = 1;
@@ -378,29 +365,29 @@ public class AlarmFragment extends Fragment {
       double grade_subOfAlarm; // = (Math.pow(Math.E, (-3-x1))*Math.pow(x1+3, 3))/1.35;
 
       if(x1 > 2) {
-         suggest += "主人最近睡眠不深，不知道怎麼了？";
+         suggest += "您最近睡眠不深，不知道怎麼了？";
          grade_subOfAlarm = 0.8;
       }
       else if(x1 > -1) {
-         suggest += "主人，您的生物鐘很規律哦~希望您繼續保持呢~";
+         suggest += "您的生物鐘很規律哦，希望您繼續保持呢。";
          grade_subOfAlarm = 0.99;
       }
       else {
-         suggest += "主人最近有點賴床哦~";
+         suggest += "您最近有點賴床哦！";
          grade_subOfAlarm = 0.9;
       }
 
 
       if(sleepHour > 9.3) {
-         suggest += "主人睡的時間太長了噢~萌萌早就醒了哼~";
+         suggest += "您睡的時間太長了！";
          grade_sumOfSleep = 0.88;
       }
       else if(sleepHour > 6) {
-         suggest += "主人的睡覺時長很健康呐~";
+         suggest += "您的睡覺時長很健康呢！";
          grade_sumOfSleep = 0.96;
       }
       else {
-         suggest += "萌萌最近和主人一樣，睡眠缺乏~";
+         suggest += "您整個睡眠缺乏。";
          grade_sumOfSleep = 0.6;
       }
 
@@ -410,18 +397,18 @@ public class AlarmFragment extends Fragment {
       }
       else if (timeOfSleep >= 23) {
          grade_timeOfSleep = 0.95;
-         suggest += "另外，主人最近睡得有點遲啊~";
+         suggest += "另外，您最近睡得有點遲。";
       }
       else if (timeOfSleep > 0 && timeOfSleep < 2) {
          grade_timeOfSleep = 0.75;
-         suggest += "另外，主人最近睡得有點遲啊~";
+         suggest += "另外，您已經超過12點才睡了喔。";
       }
       else if (timeOfSleep > 11 && timeOfSleep < 15) {
          grade_timeOfSleep = 1;
       }
       else if (timeOfSleep > 2 && timeOfSleep < 6){
          grade_timeOfSleep = 0.65;
-         suggest += "最近在趕project嗎？這樣對身體不好的...\n";
+         suggest += "最近是在趕工嗎？這樣熬夜對身體不好的...\n";
       }
       else {
          grade_timeOfSleep = 0.95;
@@ -450,7 +437,7 @@ public class AlarmFragment extends Fragment {
       Log.e(TAG, "Grade: " + grade);
       //////////////////
 
-      myDB2 dbHelp = new myDB2(getActivity());
+      myDB dbHelp = new myDB(getActivity());
       final SQLiteDatabase sqLiteDatabase = dbHelp.getWritableDatabase();
       ContentValues cv = new ContentValues();
       cv.put("start_time" , start_time);
@@ -458,6 +445,19 @@ public class AlarmFragment extends Fragment {
       cv.put("sleepHour", sleepHour);
       cv.put("timeOfSleep", timeOfSleep);
       cv.put("grade", z);
+      cv.put("suggestion", suggest);
       sqLiteDatabase.insert("records", null, cv);
+   }
+
+   @Override
+   public void onResume() {
+      super.onResume();
+      Toast.makeText(getActivity(), "AlarmFragment onResume", Toast.LENGTH_SHORT).show();
+   }
+
+   @Override
+   public void onDestroy() {
+      super.onDestroy();
+      Toast.makeText(getActivity(), "AlarmFragment onDestroy", Toast.LENGTH_SHORT).show();
    }
 }

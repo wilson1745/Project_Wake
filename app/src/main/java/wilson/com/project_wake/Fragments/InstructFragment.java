@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -37,6 +38,8 @@ public class InstructFragment extends Fragment {
    private View view;
    private Context context;
    private TextView textView;
+   private String[] mItemHeaders;
+   private ExpandableListView mExpandableListView;
 
    public InstructFragment() {
       // Required empty public constructor
@@ -44,15 +47,15 @@ public class InstructFragment extends Fragment {
 
    @Override
    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+      Log.e(TAG, "InstructFragment 初始化");
       view = inflater.inflate(R.layout.fragment_instruct, container, false);
       context = getActivity();
-      Log.e(TAG, "Come into InstructFragment");
 
       // Init top level data
       List<String> listDataHeader = new ArrayList<>();
-      final String[] mItemHeaders = getResources().getStringArray(R.array.instructions_main);
+      mItemHeaders = getResources().getStringArray(R.array.instructions_main);
       Collections.addAll(listDataHeader, mItemHeaders);
-      final ExpandableListView mExpandableListView = view.findViewById(R.id.expandableListView_Parent); //expand_main.xml
+      mExpandableListView = view.findViewById(R.id.expandableListView_Parent); //expand_main.xml
 
       if(mExpandableListView != null) {
          ParentLevelAdapter parentLevelAdapter = new ParentLevelAdapter(context, listDataHeader);
@@ -70,7 +73,18 @@ public class InstructFragment extends Fragment {
          }
       });
 
-      // Inflate the layout for this fragment
       return view;
+   }
+
+   @Override
+   public void onResume() {
+      super.onResume();
+      //Toast.makeText(getActivity(), "InstructFragment onResume", Toast.LENGTH_SHORT).show();
+   }
+
+   @Override
+   public void onDestroy() {
+      super.onDestroy();
+      //Toast.makeText(getActivity(), "InstructFragment onDestroy", Toast.LENGTH_SHORT).show();
    }
 }

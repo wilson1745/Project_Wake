@@ -14,6 +14,7 @@ import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import java.util.ArrayList;
 import java.util.List;
 
+import wilson.com.project_wake.Fragments.AdvanceFragment;
 import wilson.com.project_wake.Fragments.AlarmFragment;
 import wilson.com.project_wake.Fragments.InstructFragment;
 import wilson.com.project_wake.Fragments.ListFragment;
@@ -24,12 +25,12 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
 
    List<Fragment> list = new ArrayList<>();
    BottomNavigationBar bottomNavigationBar;
+   FragmentManager fm;
 
    AlarmFragment alarmFragment;
    ListFragment listFragment;
-   //DiaryFragment diaryFragment;
+   AdvanceFragment advanceFragment;
    InstructFragment instructFragment;
-   FragmentManager fm;
 
    @Override
    protected void onCreate(Bundle savedInstanceState) {
@@ -38,15 +39,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
 
       fm = getFragmentManager();
 
+      //添加標籤標籤頁
       bottomNavigationBar = (BottomNavigationBar) findViewById(R.id.bottom);
       bottomNavigationBar.setMode(BottomNavigationBar.MODE_SHIFTING);
       bottomNavigationBar.setBackgroundStyle(BottomNavigationBar.BACKGROUND_STYLE_RIPPLE);
-
-      //添加標籤標籤頁
       bottomNavigationBar
-              .addItem(new BottomNavigationItem(R.drawable.sleep_pressed, "Home")
+              .addItem(new BottomNavigationItem(R.drawable.sleep_pressed, "Start Tracking")
                       .setActiveColorResource(R.color.bottombar).setInactiveIconResource(R.drawable.sleep_normal))
-              .addItem(new BottomNavigationItem(R.drawable.analysis_pressed, "Sleep Trend")
+              .addItem(new BottomNavigationItem(R.drawable.analysis_pressed, "Sleep Records")
                       .setActiveColorResource(R.color.bottombar).setInactiveIconResource(R.drawable.analysis_normal))
               .addItem(new BottomNavigationItem(R.drawable.diary_pressed, "Advance Options")
                       .setActiveColorResource(R.color.bottombar).setInactiveIconResource(R.drawable.diary_normal))
@@ -73,15 +73,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
       switch(position) {
          case 0:
             if(alarmFragment == null) {
-               //初始化alarmFragment
-               alarmFragment = new AlarmFragment();
+               alarmFragment = new AlarmFragment(); //初始化alarmFragment
                transaction.add(R.id.layFrame, alarmFragment);
                list.add(alarmFragment);
             }
             else {
                transaction.show(alarmFragment);
             }
-            //DiaryFragment.tag = true;
             break;
          case 1:
             if(listFragment != null) {
@@ -90,9 +88,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
             listFragment = new ListFragment();
             transaction.add(R.id.layFrame, listFragment).addToBackStack(null);
             list.add(listFragment);
+            //Log.e(TAG, String.valueOf(list.size()));
             break;
          case 2:
-            Toast.makeText(this, "case 2", Toast.LENGTH_LONG).show();
+            if(advanceFragment != null) {
+               advanceFragment = null;
+            }
+            advanceFragment = new AdvanceFragment();
+            transaction.add(R.id.layFrame, advanceFragment).addToBackStack(null);
+            list.add(advanceFragment);
             break;
          case 3:
             if(instructFragment != null) {
@@ -101,9 +105,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
             instructFragment = new InstructFragment();
             transaction.add(R.id.layFrame, instructFragment).addToBackStack(null);
             list.add(instructFragment);
-            //DiaryFragment.tag = true;
             break;
-
          default:
             break;
       }
@@ -120,5 +122,21 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
 
    }
 
+   @Override
+   protected void onResume() {
+      super.onResume();
+      Toast.makeText(this, "MainActivity onResume", Toast.LENGTH_SHORT).show();
+   }
 
+   @Override
+   public void onDestroy() {
+      super.onDestroy();
+      Toast.makeText(this, "MainActivity onDestroy", Toast.LENGTH_SHORT).show();
+   }
+
+   @Override
+   protected void onPause() {
+      super.onPause();
+      Toast.makeText(this, "MainActivity onPause", Toast.LENGTH_SHORT).show();
+   }
 }
