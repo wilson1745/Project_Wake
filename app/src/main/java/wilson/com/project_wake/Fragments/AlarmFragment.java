@@ -475,7 +475,7 @@ public class AlarmFragment extends Fragment {
    public void onResume() {
       super.onResume();
       //Toast.makeText(getActivity(), "AlarmFragment onResume", Toast.LENGTH_SHORT).show();
-      Log.e(TAG, "AlarmFragment onDestroy");
+      Log.e(TAG, "AlarmFragment onResume");
    }
 
    @Override

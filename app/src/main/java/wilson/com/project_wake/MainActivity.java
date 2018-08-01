@@ -81,36 +81,98 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
             else {
                transaction.show(alarmFragment);
             }
+
+            Log.e(TAG, "list size: " + String.valueOf(list.size()));
             break;
          case 1:
-            if(listFragment != null) {
+            if(listFragment == null) {
+               Log.e(TAG, "listFragment == null");
+               listFragment = new ListFragment();
+               transaction.add(R.id.layFrame, listFragment);
+               list.add(listFragment);
+            }
+            else {
+               transaction.remove(listFragment);
+               listFragment = null;
+               listFragment = new ListFragment();
+               transaction.add(R.id.layFrame, listFragment).addToBackStack(null);
+               int i = checkList(listFragment);
+               list.set(i, listFragment);
+            }
+
+            /*if(listFragment != null) {
                listFragment = null;
             }
             listFragment = new ListFragment();
             transaction.add(R.id.layFrame, listFragment);
-            list.add(listFragment);
-            //Log.e(TAG, String.valueOf(list.size()));
+            list.add(listFragment);*/
+
+            Log.e(TAG, "list size1: " + String.valueOf(list.size()));
             break;
          case 2:
-            if(advanceFragment != null) {
+            if(advanceFragment == null) {
+               Log.e(TAG, "advanceFragment == null");
+               advanceFragment = new AdvanceFragment();
+               transaction.add(R.id.layFrame, advanceFragment);
+               list.add(advanceFragment);
+            }
+            else {
+               transaction.remove(advanceFragment);
+               advanceFragment = null;
+               advanceFragment = new AdvanceFragment();
+               transaction.add(R.id.layFrame, advanceFragment).addToBackStack(null);
+               int i = checkList(advanceFragment);
+               list.set(i, advanceFragment);
+            }
+
+            /*if(advanceFragment != null) {
                advanceFragment = null;
             }
             advanceFragment = new AdvanceFragment();
             transaction.add(R.id.layFrame, advanceFragment);
-            list.add(advanceFragment);
+            list.add(advanceFragment);*/
+
+            Log.e(TAG, "list size: " + String.valueOf(list.size()));
             break;
          case 3:
-            if(instructFragment != null) {
+            if(instructFragment == null) {
+               Log.e(TAG, "instructFragment == null");
+               instructFragment = new InstructFragment();
+               transaction.add(R.id.layFrame, instructFragment);
+               list.add(instructFragment);
+            }
+            else {
+               transaction.remove(instructFragment);
+               instructFragment = null;
+               instructFragment = new InstructFragment();
+               transaction.add(R.id.layFrame, instructFragment).addToBackStack(null);
+               int i = checkList(instructFragment);
+               list.set(i, instructFragment);
+            }
+
+            /*if(instructFragment != null) {
                instructFragment = null;
             }
             instructFragment = new InstructFragment();
             transaction.add(R.id.layFrame, instructFragment);
-            list.add(instructFragment);
+            list.add(instructFragment);*/
+
+            Log.e(TAG, "list size: " + String.valueOf(list.size()));
             break;
          default:
             break;
       }
       transaction.commit();
+   }
+
+   private int checkList(Fragment fragment) {
+      int position = 0;
+      for(int i = 0; i < list.size(); i++) {
+         if(list.get(i) == fragment) {
+            position = i;
+         }
+      }
+      return position;
    }
 
    @Override
