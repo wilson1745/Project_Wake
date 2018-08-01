@@ -63,7 +63,7 @@ public class AlarmFragment extends Fragment {
    public static final String TAG = "AlarmFragment";
 
    private TextView hourt, maohao1, maohao2, word1, mint, sec;
-   private Button start, reset, btn_sensor, timeBtn, btn_start, btn_stop;
+   private Button start, reset, btn_sensor, timeBtn;
    private long timeusedinsec;
    private boolean isstop = false;
    private int alarmHour, alarmMinute;
@@ -103,9 +103,8 @@ public class AlarmFragment extends Fragment {
       Log.e(TAG, "AlarmFragment 初始化");
       View view = inflater.inflate(R.layout.fragment_alarm, container, false);
       context = getActivity();
+      //不讓螢幕熄滅 wakelock替代品
       getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-
       init(view);
 
       return view;
@@ -153,7 +152,7 @@ public class AlarmFragment extends Fragment {
             Log.e(TAG, "Date_start: " + start_time);
 
             //鬧鐘控制函數
-            //alarmControl(true);
+            alarmControl(true);
 
             mHandler.removeMessages(1);
             isstop = false;
@@ -168,6 +167,7 @@ public class AlarmFragment extends Fragment {
             /*if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                //Do something here...
             }*/
+
             start.setVisibility(View.GONE);
             reset.setVisibility(View.VISIBLE);
             //開始計時的字樣
@@ -185,7 +185,7 @@ public class AlarmFragment extends Fragment {
             isstop = true;
             mSensorManager.unregisterListener(mSensorEventListener);
 
-            //alarmControl(false);
+            alarmControl(false);
 
             //對Android版本做相容處理，對於Android 6及以上版本需要向使用者請求授權，而低版本的則直接調用
             /*if(ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -194,21 +194,6 @@ public class AlarmFragment extends Fragment {
             reset.setVisibility(View.GONE);
             start.setVisibility(View.VISIBLE);
             word1.setText("Your Sleep Length ");
-         }
-      });
-
-      btn_start.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            //鬧鐘控制函數
-            alarmControl(true);
-         }
-      });
-
-      btn_stop.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-            alarmControl(false);
          }
       });
 
@@ -284,8 +269,6 @@ public class AlarmFragment extends Fragment {
       reset   = (Button) view.findViewById(R.id.reset);
       word1   = (TextView) view.findViewById(R.id.word1);
       timeBtn = (Button) view.findViewById(R.id.timeBtn); //獲取時間按鈕
-      btn_start = view.findViewById(R.id.btn_start);
-      btn_stop = view.findViewById(R.id.btn_stop);
    }
 
    private void findCalendar(String time) {
