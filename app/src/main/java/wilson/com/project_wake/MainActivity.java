@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
                listFragment = null;
             }
             listFragment = new ListFragment();
-            transaction.add(R.id.layFrame, listFragment).addToBackStack(null);
+            transaction.add(R.id.layFrame, listFragment);
             list.add(listFragment);
             //Log.e(TAG, String.valueOf(list.size()));
             break;
@@ -95,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
                advanceFragment = null;
             }
             advanceFragment = new AdvanceFragment();
-            transaction.add(R.id.layFrame, advanceFragment).addToBackStack(null);
+            transaction.add(R.id.layFrame, advanceFragment);
             list.add(advanceFragment);
             break;
          case 3:
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
                instructFragment = null;
             }
             instructFragment = new InstructFragment();
-            transaction.add(R.id.layFrame, instructFragment).addToBackStack(null);
+            transaction.add(R.id.layFrame, instructFragment);
             list.add(instructFragment);
             break;
          default:
@@ -142,4 +143,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationB
       //Toast.makeText(this, "MainActivity onPause", Toast.LENGTH_SHORT).show();
       Log.e(TAG, "MainActivity onPause");
    }
+
+   @Override
+   public boolean onKeyDown(int keyCode, KeyEvent event) {
+      if(keyCode == KeyEvent.KEYCODE_BACK) {
+         return true;
+      }
+      return super.onKeyDown(keyCode, event);
+   }
+
 }
